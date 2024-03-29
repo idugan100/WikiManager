@@ -8,7 +8,7 @@ import (
 )
 
 var templates = template.Must(template.ParseFiles("./tmpl/create.html", "./tmpl/edit.html", "./tmpl/view.html", "./tmpl/all.html"))
-var fileValidator = regexp.MustCompile("^[a-zA-Z0-9]+$")
+var fileValidator = regexp.MustCompile("^[a-zA-Z0-9_-]+$")
 
 func main() {
 	p1 := &Page{Title: "Article", Body: []byte("This is the body of article 1!")}
