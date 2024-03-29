@@ -1,0 +1,12 @@
+<h1>All Wiki Pages</h1>
+<div>
+    <a href="/create"> new</a>
+</div>
+{{range .}}
+    <h2>{{.Title}}</h2>
+    <a href="/view/{{.Title}}">visit</a>
+    <a href="/edit/{{.Title}}"  > edit</a>
+    <a href="/delete/{{.Title}}"  > delete</a>
+{{else}}
+    <p>No wiki articles found</p>
+{{end}}
