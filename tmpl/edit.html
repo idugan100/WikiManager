@@ -4,17 +4,19 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>{{.Title}}</title>
+	<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-	<h1>{{.Title}}</h1>
+<body class="bg-zinc-900 ">
+	<h1 class="text-3xl text-gray-200 font-bold m-4">{{.Title}}</h1>
 	<form action="/save/{{.Title}}" method="POST">
-		<textarea required name="body" rows="50" cols="150">{{printf "%s" .Body}}</textarea>
-		<div>
-			<a href="/view/{{.Title}}"> Back to view</a>
+		<div class="flex justify-center">
+			<textarea required name="body" rows="25" cols="110" class="p-1 rounded border border-4 border-orange-400 rounded resize-y">{{printf "%s" .Body}}</textarea>
 		</div>
-		<div>	
-			<button type="submit">save</button>
+		<div class="flex justify-around m-4">
+			<a href="/view/{{.Title}}" class="text-gray-200 underline hover:bg-zinc-800 px-2 rounded"> cancel</a>
+			<button class="text-gray-200 underline hover:bg-zinc-800 px-2 rounded" type="submit">save</button>
 		</div>
+
 	</form>
 </body>
 </html>
