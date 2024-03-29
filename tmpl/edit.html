@@ -8,7 +8,7 @@
 <body>
 	<h1>{{.Title}}</h1>
 	<form action="/save/{{.Title}}" method="POST">
-		<textarea name="body" rows="50" cols="150">{{printf "%s" .Body}}</textarea>
+		<textarea required name="body" rows="50" cols="150">{{printf "%s" .Body}}</textarea>
 		<div>
 			<a href="/view/{{.Title}}"> Back to view</a>
 		</div>
