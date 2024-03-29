@@ -11,12 +11,6 @@ var templates = template.Must(template.ParseFiles("./tmpl/create.html", "./tmpl/
 var fileValidator = regexp.MustCompile("^[a-zA-Z0-9_-]+$")
 
 func main() {
-	p1 := &Page{Title: "Article", Body: []byte("This is the body of article 1!")}
-	err := p1.save()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
 	fmt.Println("starting server")
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /view/{path}", validatePath(viewWikiPage))
@@ -31,7 +25,7 @@ func main() {
 		Addr:    "127.0.0.1:8080",
 		Handler: mux,
 	}
-	err = server.ListenAndServe()
+	err := server.ListenAndServe()
 	if err != nil {
 		fmt.Errorf("Error with server: %w", err)
 	}
