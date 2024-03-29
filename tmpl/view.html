@@ -1,8 +1,22 @@
-<h1>{{.Title}}</h1>
-<a href="/edit/{{.Title}}"  > edit</a>
-<a href="/delete/{{.Title}}"  > delete</a>
-
-<div>
-    <a href="/"> Back to home</a>
-</div>
-<p>{{printf "%s" .Body}}</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    <script type="module" src="https://md-block.verou.me/md-block.js"></script>
+</head>
+<body>
+    <h1>{{.Title}}</h1>
+    <a href="/edit/{{.Title}}"  > edit</a>
+    <a href="/delete/{{.Title}}"  > delete</a>
+    
+    <div>
+        <a href="/"> Back to home</a>
+    </div>
+    <md-block>        
+        {{printf "%s" .Body}}
+    </md-block>
+        
+</body>
+</html>
