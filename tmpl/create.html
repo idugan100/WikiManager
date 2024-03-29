@@ -1,11 +1,26 @@
-<h1>Create a new article</h1>
-<form action="/store" method="POST">
-    <div>
-        <label>Title:</label>
-        <input required type="text" name="title" pattern="^[a-zA-Z0-9_-]+$">
-    </div>
-    <textarea required name="body" cols="150" rows="50"  style="margin-top: 2px;"></textarea>
-    <div>
-        <button type="submit">Create</button>
-    </div>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Wiki</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-900 ">
+    <h1 class="text-3xl text-gray-200 font-bold m-4">Create new wiki</h1>
+    <form action="/store" method="POST">
+        <div class="flex justify-center m-3 items-center">
+            <label class="text-gray-200 text-xl m-1 ">Title:</label>
+            <input class="m-1 p-1 rounded border border-4 border-orange-400 rounded" required type="text" name="title" pattern="^[a-zA-Z0-9_-]+$">
+        </div>
+        <div class="flex justify-center">
+            <textarea required name="body" cols="110" rows="25"  class="p-1 rounded border border-4 border-orange-400 rounded resize-y"></textarea>
+        </div>
+        
+        <div class="flex justify-around m-4 mb-20">
+            <a href="/" class="text-gray-200 underline hover:bg-zinc-800 px-2 rounded">cancel</a>
+            <button type="submit" class="text-gray-200 underline hover:bg-zinc-800 px-2 rounded">create</button>
+        </div>
+    </form>        
+</body>
+</html>

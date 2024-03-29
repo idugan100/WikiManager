@@ -6,13 +6,13 @@
 	<title>{{.Title}}</title>
 	<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-zinc-900 ">
+<body class="bg-zinc-900">
 	<h1 class="text-3xl text-gray-200 font-bold m-4">{{.Title}}</h1>
 	<form action="/save/{{.Title}}" method="POST">
 		<div class="flex justify-center">
 			<textarea required name="body" rows="25" cols="110" class="p-1 rounded border border-4 border-orange-400 rounded resize-y">{{printf "%s" .Body}}</textarea>
 		</div>
-		<div class="flex justify-around m-4">
+		<div class="flex justify-around m-4 mb-20">
 			<a href="/view/{{.Title}}" class="text-gray-200 underline hover:bg-zinc-800 px-2 rounded"> cancel</a>
 			<button class="text-gray-200 underline hover:bg-zinc-800 px-2 rounded" type="submit">save</button>
 		</div>
