@@ -68,6 +68,8 @@ func allWikiPages(w http.ResponseWriter, r *http.Request) {
 	path := "./content/"
 	fileSystem := os.DirFS(path)
 	var pageList []Page
+	search := r.URL.Query().Get("search")
+
 	fs.WalkDir(fileSystem, ".", func(path string, d fs.DirEntry, err error) error {
 		if !d.IsDir() {
 			p := &Page{}
@@ -75,7 +77,9 @@ func allWikiPages(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
-			pageList = append(pageList, *p)
+			if strings.Contains(strings.ToLower(p.Title), strings.ToLower(search)) {
+				pageList = append(pageList, *p)
+			}
 
 		}
 		return nil
