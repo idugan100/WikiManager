@@ -1,12 +1,25 @@
-<h1>All Wiki Pages</h1>
-<div>
-    <a href="/create"> new</a>
-</div>
-{{range .}}
-    <h2>{{.Title}}</h2>
-    <a href="/view/{{.Title}}">visit</a>
-    <a href="/edit/{{.Title}}"  > edit</a>
-    <a href="/delete/{{.Title}}"  > delete</a>
-{{else}}
-    <p>No wiki articles found</p>
-{{end}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Wiki Pages</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-900 ">
+    <h1 class="text-3xl text-gray-200 font-bold m-4">All Wiki Pages</h1>
+    <div class="flex justify-end w-1/4 mx-4 my-2">
+        <a href="/create" class="text-gray-200 text-2xl hover:bg-zinc-800 px-2 rounded">&#10753;</a>
+    </div>
+    {{range .}}
+    <div class="flex justify-between w-1/4 mx-4 my-2">
+        <a href="/view/{{.Title}}" class="text-gray-200  text-xl font-bold underline hover:bg-zinc-800 px-2 rounded">{{.Title}}</a>
+        <a href="/delete/{{.Title}}" class=" hover:bg-zinc-800 px-2 rounded" > &#x1F5D1;</a>
+    </div>
+
+    {{else}}
+        <p class="text-gray-200">No wiki articles found</p>
+    {{end}} 
+    
+</body>
+</html>
