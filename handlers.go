@@ -1,9 +1,11 @@
 package main
 
 import (
+	"cmp"
 	"io/fs"
 	"net/http"
 	"os"
+	"slices"
 	"strings"
 )
 
@@ -78,7 +80,9 @@ func allWikiPages(w http.ResponseWriter, r *http.Request) {
 		}
 		return nil
 	})
-
+	slices.SortFunc(pageList, func(a, b Page) int {
+		return cmp.Compare(strings.ToLower(a.Title), strings.ToLower(b.Title))
+	})
 	err := templates.ExecuteTemplate(w, "all.html", pageList)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
