@@ -25,18 +25,15 @@ func main() {
 	mux.HandleFunc("GET /delete/{path}", requireAdmin(validatePath(deleteWikiPage)))
 	mux.HandleFunc("GET /create", requireAdmin(createWikiPage))
 	mux.HandleFunc("POST /store", requireAdmin(storeWikiPage))
+	mux.HandleFunc("GET /logout", requireAdmin(logout))
 	mux.HandleFunc("GET /", isAdmin(allWikiPages))
 	mux.HandleFunc("GET /loginpage", loginScreen)
 	mux.HandleFunc("GET /login", login)
-	mux.HandleFunc("GET /logout", requireAdmin(logout))
 
 	server := http.Server{
 		Addr:    "127.0.0.1:8080",
 		Handler: mux,
 	}
 
-	err := server.ListenAndServe()
-	if err != nil {
-		_ = fmt.Errorf("error with server: %w", err)
-	}
+	panic(server.ListenAndServe())
 }
