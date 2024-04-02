@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/sessions"
 )
 
-var templates = template.Must(template.ParseFiles("./tmpl/create.html", "./tmpl/edit.html", "./tmpl/view.html", "./tmpl/all.html"))
+var templates = template.Must(template.ParseFiles("./tmpl/login.html", "./tmpl/create.html", "./tmpl/edit.html", "./tmpl/view.html", "./tmpl/all.html"))
 var fileValidator = regexp.MustCompile("^[a-zA-Z0-9_-]+$")
 var secret = []byte(os.Getenv("GOWIKISECRET"))
 var session_store = sessions.NewCookieStore(secret)
@@ -26,6 +26,7 @@ func main() {
 	mux.HandleFunc("GET /create", requireAdmin(createWikiPage))
 	mux.HandleFunc("POST /store", requireAdmin(storeWikiPage))
 	mux.HandleFunc("GET /", isAdmin(allWikiPages))
+	mux.HandleFunc("GET /loginpage", loginScreen)
 	mux.HandleFunc("GET /login", login)
 	mux.HandleFunc("GET /logout", requireAdmin(logout))
 

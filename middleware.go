@@ -47,10 +47,11 @@ func isAdmin(fn func(http.ResponseWriter, *http.Request, bool)) http.HandlerFunc
 
 func isAdminAndValidatePath(fn func(http.ResponseWriter, *http.Request, string, bool)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		filename := r.PathValue("path")
 		if fileValidator.MatchString(filename) {
-			session, _ := session_store.Get(r, "admin")
 
+			session, _ := session_store.Get(r, "admin")
 			auth, ok := session.Values["authenticated"].(bool)
 
 			if !auth || !ok {
@@ -58,6 +59,7 @@ func isAdminAndValidatePath(fn func(http.ResponseWriter, *http.Request, string, 
 			} else {
 				fn(w, r, filename, true)
 			}
+
 		} else {
 			w.WriteHeader(http.StatusBadRequest)
 			return

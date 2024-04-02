@@ -1,12 +1,8 @@
 package main
 
 import (
-	"cmp"
-	"io/fs"
 	"net/http"
 	"os"
-	"slices"
-	"strings"
 )
 
 func viewWikiPage(w http.ResponseWriter, r *http.Request, filename string, isAdmin bool) {
@@ -72,29 +68,14 @@ func storeWikiPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func allWikiPages(w http.ResponseWriter, r *http.Request, isAdmin bool) {
-	//load all pages from content folder
-	path := "./content/"
-	fileSystem := os.DirFS(path)
-	var pageList []Page
+
 	search := r.URL.Query().Get("search")
+	var pageList []Page
+	pageList, err := loadAllPages(search)
 
-	fs.WalkDir(fileSystem, ".", func(path string, d fs.DirEntry, err error) error {
-		if !d.IsDir() {
-			p := &Page{}
-			p, err := loadPage(strings.TrimSuffix(d.Name(), ".txt"))
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-			}
-			if strings.Contains(strings.ToLower(p.Title), strings.ToLower(search)) {
-				pageList = append(pageList, *p)
-			}
-
-		}
-		return nil
-	})
-	slices.SortFunc(pageList, func(a, b Page) int {
-		return cmp.Compare(strings.ToLower(a.Title), strings.ToLower(b.Title))
-	})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
 
 	data := struct {
 		List    []Page
@@ -103,7 +84,7 @@ func allWikiPages(w http.ResponseWriter, r *http.Request, isAdmin bool) {
 		List:    pageList,
 		IsAdmin: isAdmin,
 	}
-	err := templates.ExecuteTemplate(w, "all.html", data)
+	err = templates.ExecuteTemplate(w, "all.html", data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -124,13 +105,19 @@ func login(w http.ResponseWriter, r *http.Request) {
 		session, _ := session_store.Get(r, "admin")
 		session.Values["authenticated"] = true
 		session.Save(r, w)
+		http.Redirect(w, r, "/", http.StatusFound)
 	} else {
 		w.WriteHeader(http.StatusUnauthorized)
 	}
+}
+
+func loginScreen(w http.ResponseWriter, r *http.Request) {
+	templates.ExecuteTemplate(w, "login.html", nil)
 }
 
 func logout(w http.ResponseWriter, r *http.Request) {
 	session, _ := session_store.Get(r, "admin")
 	session.Values["authenticated"] = false
 	session.Save(r, w)
+	http.Redirect(w, r, "/", http.StatusFound)
 }
