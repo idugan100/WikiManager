@@ -9,13 +9,21 @@ import (
 	"strings"
 )
 
-func viewWikiPage(w http.ResponseWriter, r *http.Request, filename string) {
+func viewWikiPage(w http.ResponseWriter, r *http.Request, filename string, isAdmin bool) {
 	p, err := loadPage(filename)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = templates.ExecuteTemplate(w, "view.html", p)
+
+	data := struct {
+		Page    Page
+		IsAdmin bool
+	}{
+		Page:    *p,
+		IsAdmin: isAdmin,
+	}
+	err = templates.ExecuteTemplate(w, "view.html", data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -63,7 +71,7 @@ func storeWikiPage(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/view/"+filename, http.StatusFound)
 }
 
-func allWikiPages(w http.ResponseWriter, r *http.Request) {
+func allWikiPages(w http.ResponseWriter, r *http.Request, isAdmin bool) {
 	//load all pages from content folder
 	path := "./content/"
 	fileSystem := os.DirFS(path)
@@ -87,16 +95,53 @@ func allWikiPages(w http.ResponseWriter, r *http.Request) {
 	slices.SortFunc(pageList, func(a, b Page) int {
 		return cmp.Compare(strings.ToLower(a.Title), strings.ToLower(b.Title))
 	})
-	err := templates.ExecuteTemplate(w, "all.html", pageList)
+
+	data := struct {
+		List    []Page
+		IsAdmin bool
+	}{
+		List:    pageList,
+		IsAdmin: isAdmin,
+	}
+	err := templates.ExecuteTemplate(w, "all.html", data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
 }
+
 func deleteWikiPage(w http.ResponseWriter, r *http.Request, filename string) {
 	err := os.Remove("./content/" + filename + ".txt")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 	http.Redirect(w, r, "/", http.StatusFound)
+}
+
+func login(w http.ResponseWriter, r *http.Request) {
+	password := r.FormValue("password")
+	if password == "password" {
+		session, _ := session_store.Get(r, "admin")
+		session.Values["authenticated"] = true
+		session.Save(r, w)
+	} else {
+		w.WriteHeader(http.StatusUnauthorized)
+	}
+}
+
+func message(w http.ResponseWriter, r *http.Request) {
+	session, _ := session_store.Get(r, "admin")
+
+	// Check if user is authenticated
+	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+	w.Write([]byte("logged in"))
+}
+
+func logout(w http.ResponseWriter, r *http.Request) {
+	session, _ := session_store.Get(r, "admin")
+	session.Values["authenticated"] = false
+	session.Save(r, w)
 }

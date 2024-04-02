@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{.Title}}</title>
+    <title>{{.Page.Title}}</title>
 </head>
 <style>
     body{
@@ -42,19 +42,21 @@
     }
 </style>
 <body>
-    <h1>{{.Title}}</h1>
+    <h1>{{.Page.Title}}</h1>
     <div class="bodyWrapper">
         <div id="body"></div>
     </div>
     
     <div class="linkWrapper">
         <a href="/">back</a>
-        <a href="/edit/{{.Title}}">edit</a>
-        <a href="/delete/{{.Title}}">delete</a>
+        {{if .IsAdmin}}
+            <a href="/edit/{{.Title}}">edit</a>
+            <a href="/delete/{{.Title}}">delete</a>
+        {{end}}
     </div>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-      document.getElementById('body').innerHTML =marked.parse('{{printf "%s" .Body}}');
+      document.getElementById('body').innerHTML =marked.parse('{{printf "%s" .Page.Body}}');
     </script>
 </body>
 </html>
