@@ -8,6 +8,8 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/gorilla/sessions"
 )
 
 func TestPageSaveLoadDelete(t *testing.T) {
@@ -95,6 +97,8 @@ func TestLogin(t *testing.T) {
 func TestViewWikiPage(t *testing.T) {
 	p := Page{Title: "testWiki", Body: []byte("test wiki body")}
 	p.save()
+	defer deletePage(p.Title)
+
 	req := httptest.NewRequest(http.MethodGet, "/view/testWiki", nil)
 	w := httptest.NewRecorder()
 	viewWikiPage(w, req, p.Title, true)
@@ -112,6 +116,7 @@ func TestViewWikiPage(t *testing.T) {
 func TestEditWikiPage(t *testing.T) {
 	p := Page{Title: "testWiki", Body: []byte("test wiki body")}
 	p.save()
+	defer deletePage(p.Title)
 	req := httptest.NewRequest(http.MethodGet, "/edit/testWiki", nil)
 	w := httptest.NewRecorder()
 
@@ -126,6 +131,7 @@ func TestEditWikiPage(t *testing.T) {
 func TestSaveWikiPage(t *testing.T) {
 	p := Page{Title: "testWiki", Body: []byte("test wiki body")}
 	p.save()
+	defer deletePage(p.Title)
 	req := httptest.NewRequest(http.MethodPost, "/save/testWiki", nil)
 	req.Form = url.Values{}
 	req.Form.Add("body", "new test wiki body")
@@ -160,5 +166,59 @@ func TestCreateWikiPage(t *testing.T) {
 
 	if !strings.Contains(string(body), "Create new wiki") {
 		t.Errorf("incorrect html")
+	}
+}
+
+func TestStoreWikiPage(t *testing.T) {
+	req := httptest.NewRequest(http.MethodPost, "/store", nil)
+	req.Form = url.Values{}
+	req.Form.Add("title", "testWiki")
+	req.Form.Add("body", "this is the testwiki body")
+	w := httptest.NewRecorder()
+
+	storeWikiPage(w, req)
+
+	if w.Code != http.StatusFound {
+		t.Errorf("unexpected status code %d", w.Code)
+	}
+
+	p, err := loadPage("testWiki")
+
+	if err != nil {
+		t.Errorf("error when loading created wiki: %s", err.Error())
+	}
+	if p.Title != "testWiki" || string(p.Body) != "this is the testwiki body" {
+		t.Errorf("created wiki page does not match the submitted wikie")
+	}
+
+	deletePage("testWiki")
+}
+
+func TestRequireAdmin(t *testing.T) {
+	//test when user is not an admin
+	req := httptest.NewRequest(http.MethodGet, "/create", nil)
+	w := httptest.NewRecorder()
+
+	handler := requireAdmin(createWikiPage)
+	handler(w, req)
+
+	if w.Code != http.StatusForbidden {
+		t.Errorf("unexpected status code %d", w.Code)
+	}
+
+	//test when user is an admin
+	req = httptest.NewRequest(http.MethodGet, "/create", nil)
+	w = httptest.NewRecorder()
+
+	// Set up a test session
+	store := sessions.NewCookieStore([]byte("secret"))
+	session, _ := store.Get(req, "admin")
+	session.Values["authenticated"] = true
+	session.Save(req, w)
+
+	handler(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("unexpected status code %d", w.Code)
 	}
 }
