@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/sessions"
 )
 
-var templates = template.Must(template.ParseFiles("./tmpl/login.html", "./tmpl/create.html", "./tmpl/edit.html", "./tmpl/view.html", "./tmpl/all.html"))
+var templates = template.Must(template.ParseGlob("./tmpl/*"))
 var fileValidator = regexp.MustCompile("^[a-zA-Z0-9_-]+$")
 var secret = []byte(os.Getenv("GOWIKISECRET"))
 var session_store = sessions.NewCookieStore(secret)
