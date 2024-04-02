@@ -4,6 +4,8 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"os"
 	"strings"
 	"testing"
 )
@@ -72,5 +74,20 @@ func TestLoginScreen(t *testing.T) {
 
 	if !strings.Contains(string(body), "log in") {
 		t.Errorf("incorrect html served back")
+	}
+}
+
+func TestLogin(t *testing.T) {
+	password = os.Getenv("GOWIKIPASSWORD")
+
+	req := httptest.NewRequest("POST", "/login", nil)
+	req.Form = url.Values{}
+	req.Form.Add("password", password)
+
+	w := httptest.NewRecorder()
+
+	login(w, req)
+	if w.Code != http.StatusFound {
+		t.Errorf("unexpected status code returned from login %d", w.Code)
 	}
 }
