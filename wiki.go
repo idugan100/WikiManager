@@ -14,10 +14,11 @@ var templates = template.Must(template.ParseGlob("./tmpl/*"))
 var fileValidator = regexp.MustCompile("^[a-zA-Z0-9_-]+$")
 var secret = []byte(os.Getenv("GOWIKISECRET"))
 var session_store = sessions.NewCookieStore(secret)
+var password = os.Getenv("GOWIKIPASSWORD")
 
 func main() {
-
 	fmt.Println("starting server")
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /view/{path}", isAdminAndValidatePath(viewWikiPage))
 	mux.HandleFunc("GET /edit/{path}", requireAdmin(validatePath(editWikiPage)))
