@@ -32,7 +32,7 @@ func main() {
 	mux.HandleFunc("GET /login", login)
 
 	server := http.Server{
-		Addr:    "127.0.0.1:8080",
+		Addr:    ":8080",
 		Handler: mux,
 	}
 
