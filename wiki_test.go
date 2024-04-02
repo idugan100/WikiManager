@@ -2,6 +2,7 @@ package main
 
 import (
 	"io"
+	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
@@ -44,9 +45,9 @@ func TestAllWikiRoute(t *testing.T) {
 	allWikiPages(w, req, true)
 
 	//check status code
-	if w.Result().StatusCode != 200 {
+	if w.Result().StatusCode != http.StatusOK {
 
-		t.Errorf("error fetching / route")
+		t.Errorf("error fetching / route status code of %d", w.Result().StatusCode)
 	}
 
 	//check rendered html
@@ -56,4 +57,20 @@ func TestAllWikiRoute(t *testing.T) {
 		t.Errorf("all wiki page / does not contain all wikis")
 	}
 
+}
+
+func TestLoginScreen(t *testing.T) {
+	req := httptest.NewRequest("GET", "/loginscreen", nil)
+	w := httptest.NewRecorder()
+	loginScreen(w, req)
+
+	if w.Result().StatusCode != http.StatusOK {
+		t.Errorf("error fetching login screen, status code of %d", w.Result().StatusCode)
+	}
+
+	body, _ := io.ReadAll(w.Result().Body)
+
+	if !strings.Contains(string(body), "log in") {
+		t.Errorf("incorrect html served back")
+	}
 }
