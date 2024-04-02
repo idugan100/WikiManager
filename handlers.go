@@ -129,17 +129,6 @@ func login(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func message(w http.ResponseWriter, r *http.Request) {
-	session, _ := session_store.Get(r, "admin")
-
-	// Check if user is authenticated
-	if auth, ok := session.Values["authenticated"].(bool); !ok || !auth {
-		http.Error(w, "Forbidden", http.StatusForbidden)
-		return
-	}
-	w.Write([]byte("logged in"))
-}
-
 func logout(w http.ResponseWriter, r *http.Request) {
 	session, _ := session_store.Get(r, "admin")
 	session.Values["authenticated"] = false
