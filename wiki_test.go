@@ -45,7 +45,7 @@ func TestAllWikiRoute(t *testing.T) {
 	allWikiPages(w, req, true)
 
 	//check status code
-	if w.Result().StatusCode != http.StatusOK {
+	if w.Code != http.StatusOK {
 
 		t.Errorf("error fetching / route status code of %d", w.Result().StatusCode)
 	}
@@ -64,7 +64,7 @@ func TestLoginScreen(t *testing.T) {
 	w := httptest.NewRecorder()
 	loginScreen(w, req)
 
-	if w.Result().StatusCode != http.StatusOK {
+	if w.Code != http.StatusOK {
 		t.Errorf("error fetching login screen, status code of %d", w.Result().StatusCode)
 	}
 
