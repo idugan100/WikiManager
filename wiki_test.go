@@ -91,3 +91,74 @@ func TestLogin(t *testing.T) {
 		t.Errorf("unexpected status code returned from login %d", w.Code)
 	}
 }
+
+func TestViewWikiPage(t *testing.T) {
+	p := Page{Title: "testWiki", Body: []byte("test wiki body")}
+	p.save()
+	req := httptest.NewRequest(http.MethodGet, "/view/testWiki", nil)
+	w := httptest.NewRecorder()
+	viewWikiPage(w, req, p.Title, true)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("unexpected status code %d", w.Code)
+	}
+
+	body, _ := io.ReadAll(w.Result().Body)
+	if !strings.Contains(string(body), string(p.Body)) {
+		t.Errorf("returned view html does not contain body")
+	}
+}
+
+func TestEditWikiPage(t *testing.T) {
+	p := Page{Title: "testWiki", Body: []byte("test wiki body")}
+	p.save()
+	req := httptest.NewRequest(http.MethodGet, "/edit/testWiki", nil)
+	w := httptest.NewRecorder()
+
+	editWikiPage(w, req, "testWiki")
+
+	if w.Code != http.StatusOK {
+		t.Errorf("unexpected status code on edit page %d", w.Code)
+	}
+
+}
+
+func TestSaveWikiPage(t *testing.T) {
+	p := Page{Title: "testWiki", Body: []byte("test wiki body")}
+	p.save()
+	req := httptest.NewRequest(http.MethodPost, "/save/testWiki", nil)
+	req.Form = url.Values{}
+	req.Form.Add("body", "new test wiki body")
+	w := httptest.NewRecorder()
+
+	saveWikiPage(w, req, "testWiki")
+
+	if w.Code != http.StatusFound {
+		t.Errorf("unexpected status code on save page %d", w.Code)
+	}
+	newPage, err := loadPage("testWiki")
+
+	if err != nil {
+		t.Errorf("error loading saved page: %s", err.Error())
+	}
+
+	if string(newPage.Body) != "new test wiki body" {
+		t.Errorf("new body does not match \"new test wiki body\": %s", newPage.Body)
+	}
+}
+
+func TestCreateWikiPage(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/create", nil)
+	w := httptest.NewRecorder()
+	createWikiPage(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("unexpected status code on create page %d", w.Code)
+	}
+
+	body, _ := io.ReadAll(w.Result().Body)
+
+	if !strings.Contains(string(body), "Create new wiki") {
+		t.Errorf("incorrect html")
+	}
+}
