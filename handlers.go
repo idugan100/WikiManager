@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-	"os"
 )
 
 func viewWikiPage(w http.ResponseWriter, r *http.Request, filename string, isAdmin bool) {
@@ -92,7 +91,7 @@ func allWikiPages(w http.ResponseWriter, r *http.Request, isAdmin bool) {
 }
 
 func deleteWikiPage(w http.ResponseWriter, r *http.Request, filename string) {
-	err := os.Remove("./content/" + filename + ".txt")
+	err := deletePage(filename)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}

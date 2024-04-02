@@ -2,6 +2,7 @@ package main
 
 import (
 	"cmp"
+	"fmt"
 	"io/fs"
 	"os"
 	"slices"
@@ -25,6 +26,14 @@ func loadPage(title string) (*Page, error) {
 		return nil, err
 	}
 	return &Page{Title: title, Body: body}, nil
+}
+
+func deletePage(title string) error {
+	err := os.Remove("./content/" + title + ".txt")
+	if err != nil {
+		return fmt.Errorf("error deleting wiki page %s: %w", title, err)
+	}
+	return nil
 }
 
 func loadAllPages(search string) ([]Page, error) {
