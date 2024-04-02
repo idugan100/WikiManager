@@ -1,6 +1,9 @@
 package main
 
 import (
+	"io"
+	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -27,4 +30,30 @@ func TestPageSaveLoadDelete(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error when deleting Wikipage")
 	}
+}
+
+func TestAllWikiRoute(t *testing.T) {
+	//setup and tear down
+	p := Page{Title: "testWiki", Body: []byte("test wiki body")}
+	p.save()
+	defer deletePage("testWiki")
+
+	//make request
+	req := httptest.NewRequest("GET", "/", nil)
+	w := httptest.NewRecorder()
+	allWikiPages(w, req, true)
+
+	//check status code
+	if w.Result().StatusCode != 200 {
+
+		t.Errorf("error fetching / route")
+	}
+
+	//check rendered html
+	body, _ := io.ReadAll(w.Result().Body)
+
+	if !strings.Contains(string(body), "testWiki") {
+		t.Errorf("all wiki page / does not contain all wikis")
+	}
+
 }
