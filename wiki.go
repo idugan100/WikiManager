@@ -10,11 +10,18 @@ import (
 	"github.com/gorilla/sessions"
 )
 
-var templates = template.Must(template.ParseGlob("./tmpl/*"))
+var templates = getTemplates("./tmpl/*")
 var fileValidator = regexp.MustCompile("^[a-zA-Z0-9_-]+$")
-var secret = []byte(os.Getenv("GOWIKISECRET"))
 var session_store = sessions.NewCookieStore(secret)
-var password = os.Getenv("GOWIKIPASSWORD")
+var secret, password = parseEnv()
+
+func getTemplates(pathToTemplates string) *template.Template {
+	return template.Must(template.ParseGlob(pathToTemplates))
+}
+
+func parseEnv() ([]byte, string) {
+	return []byte(os.Getenv("GOWIKISECRET")), os.Getenv("GOWIKIPASSWORD")
+}
 
 func setupServer() *http.ServeMux {
 	mux := http.NewServeMux()
