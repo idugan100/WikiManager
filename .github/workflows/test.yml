@@ -11,7 +11,7 @@ on:
 
 jobs:
 
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -21,9 +21,7 @@ jobs:
       with:
         go-version: '1.22.1'
 
-    - name: Lint
-      run: go fmt ./...
+    - name: test
+      run: go test ./...
 
-    # - name: Test
-    #   run: go test -v ./...
 
