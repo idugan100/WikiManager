@@ -35,7 +35,7 @@ jobs:
       run: go tool cover -func=coverage.out -o=coverage.out
 
     - name: setup badge
-      run: gobadge -filename=coverage.out -label="Test Coverage" -yellow=50 -green=70
+      run: gobadge -filename=coverage.out -text="Test Coverage" -yellow=50 -green=70
 
 
 
