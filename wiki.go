@@ -16,9 +16,7 @@ var secret = []byte(os.Getenv("GOWIKISECRET"))
 var session_store = sessions.NewCookieStore(secret)
 var password = os.Getenv("GOWIKIPASSWORD")
 
-func main() {
-	fmt.Println("starting server")
-
+func setupServer() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /view/{path}", isAdminAndValidatePath(viewWikiPage))
 	mux.HandleFunc("GET /edit/{path}", requireAdmin(validatePath(editWikiPage)))
@@ -31,9 +29,15 @@ func main() {
 	mux.HandleFunc("GET /loginpage", loginScreen)
 	mux.HandleFunc("GET /login", login)
 
+	return mux
+}
+
+func main() {
+	fmt.Println("starting server")
+
 	server := http.Server{
 		Addr:    ":8080",
-		Handler: mux,
+		Handler: setupServer(),
 	}
 
 	panic(server.ListenAndServe())

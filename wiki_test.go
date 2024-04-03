@@ -44,9 +44,10 @@ func TestAllWikiRoute(t *testing.T) {
 	defer deletePage("testWiki")
 
 	//make request
-	req := httptest.NewRequest("GET", "/", nil)
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	w := httptest.NewRecorder()
-	allWikiPages(w, req, true)
+	fn := isAdmin(allWikiPages)
+	fn.ServeHTTP(w, req)
 
 	//check status code
 	if w.Code != http.StatusOK {
@@ -64,7 +65,7 @@ func TestAllWikiRoute(t *testing.T) {
 }
 
 func TestLoginScreen(t *testing.T) {
-	req := httptest.NewRequest("GET", "/loginscreen", nil)
+	req := httptest.NewRequest(http.MethodGet, "/loginscreen", nil)
 	w := httptest.NewRecorder()
 	loginScreen(w, req)
 
@@ -82,7 +83,7 @@ func TestLoginScreen(t *testing.T) {
 func TestLogin(t *testing.T) {
 	password = os.Getenv("GOWIKIPASSWORD")
 
-	req := httptest.NewRequest("POST", "/login", nil)
+	req := httptest.NewRequest(http.MethodPost, "/login", nil)
 	req.Form = url.Values{}
 	req.Form.Add("password", password)
 
@@ -99,9 +100,11 @@ func TestViewWikiPage(t *testing.T) {
 	p.save()
 	defer deletePage(p.Title)
 
-	req := httptest.NewRequest(http.MethodGet, "/view/testWiki", nil)
+	req := httptest.NewRequest(http.MethodGet, "/view/", nil)
+	req.SetPathValue("path", "testWiki")
 	w := httptest.NewRecorder()
-	viewWikiPage(w, req, p.Title, true)
+	fn := isAdminAndValidatePath(viewWikiPage)
+	fn.ServeHTTP(w, req)
 
 	if w.Code != http.StatusOK {
 		t.Errorf("unexpected status code %d", w.Code)
@@ -220,5 +223,62 @@ func TestRequireAdmin(t *testing.T) {
 
 	if w.Code != http.StatusOK {
 		t.Errorf("unexpected status code %d", w.Code)
+	}
+}
+
+func TestDeleteWikiPage(t *testing.T) {
+	p := Page{Title: "testWiki", Body: []byte("test wiki body")}
+	err := p.save()
+	defer deletePage("testWiki")
+	if err != nil {
+		t.Errorf("error saving page: %s", err.Error())
+	}
+	req := httptest.NewRequest(http.MethodDelete, "/delete/", nil)
+	req.SetPathValue("path", "testWiki")
+	w := httptest.NewRecorder()
+
+	store := sessions.NewCookieStore([]byte("secret"))
+	session, _ := store.Get(req, "admin")
+	session.Values["authenticated"] = true
+
+	fn := requireAdmin(validatePath(deleteWikiPage))
+
+	fn.ServeHTTP(w, req)
+
+	if w.Code != http.StatusFound {
+		t.Errorf("unexpected status code %d", w.Code)
+	}
+
+	_, err = loadPage("testWiki")
+
+	if err == nil {
+		t.Errorf("deleted page not deleted")
+	}
+}
+
+func TestSetupServer(t *testing.T) {
+	p := Page{Title: "testWiki", Body: []byte("test wiki body")}
+	p.save()
+	defer deletePage("testWiki")
+
+	requestList := []struct {
+		Method     string
+		Path       string
+		ResultCode int
+	}{
+		{http.MethodGet, "/", http.StatusOK},
+		{http.MethodGet, "/view/testWiki", http.StatusOK},
+		{http.MethodGet, "/loginpage", http.StatusOK},
+		{http.MethodGet, "/login", http.StatusUnauthorized},
+	}
+
+	for _, request := range requestList {
+		req := httptest.NewRequest(request.Method, request.Path, nil)
+		w := httptest.NewRecorder()
+		setupServer().ServeHTTP(w, req)
+
+		if w.Code != request.ResultCode {
+			t.Errorf("expected code %d, got %d", request.ResultCode, w.Code)
+		}
 	}
 }
