@@ -24,9 +24,6 @@ jobs:
     - name: create-folder
       run: mkdir content
 
-    - name: env-setup
-      run: export GOWIKISECRET="secret" && export GOWIKIPASSWORD="password"
-
     - name: test
       run: go test ./...
 
