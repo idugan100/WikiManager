@@ -2,4 +2,4 @@
 
 go fmt *.go
 go test -v
-go build . && ./wiki 
+go build . && ./WikiManager 
