@@ -24,6 +24,8 @@ jobs:
     - name: intsall tool
       run: go install github.com/AlexBeauchemin/gobadge@latest
 
+    - name: create-folder
+          run: mkdir content
 
     - name: test
       run: go test ./... -covermode=count -coverprofile=coverage.out fmt
