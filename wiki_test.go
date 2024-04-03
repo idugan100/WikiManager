@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -21,7 +22,7 @@ func TestSetupServer(t *testing.T) {
 		{http.MethodGet, "/loginpage", http.StatusOK},
 		{http.MethodGet, "/login", http.StatusUnauthorized},
 	}
-
+	fmt.Print(secret, password)
 	for _, request := range requestList {
 		req := httptest.NewRequest(request.Method, request.Path, nil)
 		w := httptest.NewRecorder()
