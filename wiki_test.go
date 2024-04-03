@@ -19,7 +19,7 @@ func TestSetupServer(t *testing.T) {
 		{http.MethodGet, "/", http.StatusOK},
 		{http.MethodGet, "/view/testWiki", http.StatusOK},
 		{http.MethodGet, "/loginpage", http.StatusOK},
-		// {http.MethodGet, "/login", http.StatusUnauthorized},
+		{http.MethodGet, "/login", http.StatusUnauthorized},
 	}
 
 	for _, request := range requestList {
