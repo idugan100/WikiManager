@@ -17,7 +17,10 @@ func validatePath(fn func(http.ResponseWriter, *http.Request, string)) http.Hand
 
 func requireAdmin(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		session, _ := session_store.Get(r, "admin")
+		session, err := session_store.Get(r, "admin")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 
 		auth, ok := session.Values["authenticated"].(bool)
 
@@ -33,7 +36,11 @@ func requireAdmin(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc 
 func isAdmin(fn func(http.ResponseWriter, *http.Request, bool)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		session, _ := session_store.Get(r, "admin")
+		session, err := session_store.Get(r, "admin")
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 
 		auth, ok := session.Values["authenticated"].(bool)
 
@@ -51,7 +58,10 @@ func isAdminAndValidatePath(fn func(http.ResponseWriter, *http.Request, string, 
 		filename := r.PathValue("path")
 		if fileValidator.MatchString(filename) {
 
-			session, _ := session_store.Get(r, "admin")
+			session, err := session_store.Get(r, "admin")
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 			auth, ok := session.Values["authenticated"].(bool)
 
 			if !auth || !ok {

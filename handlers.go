@@ -101,7 +101,10 @@ func deleteWikiPage(w http.ResponseWriter, r *http.Request, filename string) {
 func login(w http.ResponseWriter, r *http.Request) {
 	enteredPassword := r.FormValue("password")
 	if enteredPassword == password {
-		session, _ := session_store.Get(r, "admin")
+		session, err := session_store.Get(r, "admin")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		session.Values["authenticated"] = true
 		session.Save(r, w)
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -115,7 +118,10 @@ func loginScreen(w http.ResponseWriter, r *http.Request) {
 }
 
 func logout(w http.ResponseWriter, r *http.Request) {
-	session, _ := session_store.Get(r, "admin")
+	session, err := session_store.Get(r, "admin")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 	session.Values["authenticated"] = false
 	session.Save(r, w)
 	http.Redirect(w, r, "/", http.StatusFound)
