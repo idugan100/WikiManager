@@ -36,6 +36,9 @@ jobs:
 
     - name: setup badge
       run: gobadge -filename=coverage.out -text="TestCoverage" -yellow=50 -green=70
+    
+    - name: remove out file
+      run: rm coverage.out
 
     - uses: EndBug/add-and-commit@v9
 
