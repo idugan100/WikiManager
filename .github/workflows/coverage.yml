@@ -1,0 +1,38 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Test Coverage
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22.1'
+
+    - name: intsall tool
+      run: go install github.com/AlexBeauchemin/gobadge@latest
+
+
+    - name: test
+      run: go test ./... -covermode=count -coverprofile=coverage.out fmt
+
+    - name: parse coverage
+      run: go tool cover -func=coverage.out -o=coverage.out
+
+    - name: setup badge
+      run: gobadge -filename=coverage.out -label="Test Coverage" -yellow=50 -green=70
+
+
+

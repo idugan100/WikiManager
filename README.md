@@ -1,5 +1,4 @@
 ## WikiManager
-
 ![Lint](https://github.com/idugan100/WikiManager/actions/workflows/lint.yml/badge.svg)
 ![Tests](https://github.com/idugan100/WikiManager/actions/workflows/test.yml/badge.svg)
 
