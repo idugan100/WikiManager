@@ -13,6 +13,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
     - uses: actions/checkout@v3
 
@@ -30,11 +31,11 @@ jobs:
     - name: test
       run: go test ./... -covermode=count -coverprofile=coverage.out fmt
 
-    - name: parse coverage
-      run: go tool cover -func=coverage.out -o=coverage.out
+    # - name: parse coverage
+    #   run: go tool cover -func=coverage.out -o=coverage.out
 
-    - name: setup badge
-      run: gobadge -filename=coverage.out -label="Test Coverage" -yellow=50 -green=70
+    # - name: setup badge
+    #   run: gobadge -filename=coverage.out -label="Test Coverage" -yellow=50 -green=70
 
 
 
