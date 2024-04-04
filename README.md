@@ -1,5 +1,5 @@
 ## WikiManager
-![TestCoverage](https://img.shields.io/badge/TestCoverage-72.9%25-brightgreen)
+![TestCoverage](https://img.shields.io/badge/TestCoverage-71.7%25-brightgreen)
 ![Lint](https://github.com/idugan100/WikiManager/actions/workflows/lint.yml/badge.svg)
 ![Tests](https://github.com/idugan100/WikiManager/actions/workflows/test.yml/badge.svg)
 
