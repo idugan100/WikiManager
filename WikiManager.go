@@ -24,6 +24,7 @@ func parseEnv() ([]byte, string) {
 }
 
 func setupServer() *http.ServeMux {
+	fmt.Print(secret, password)
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /view/{path}", isAdminAndValidatePath(viewWikiPage))
 	mux.HandleFunc("GET /edit/{path}", requireAdmin(validatePath(editWikiPage)))
@@ -43,7 +44,7 @@ func main() {
 	fmt.Println("starting server")
 
 	server := http.Server{
-		Addr:    ":8080",
+		Addr:    ":80",
 		Handler: setupServer(),
 	}
 
