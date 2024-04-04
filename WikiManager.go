@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"os"
 	"regexp"
 
 	"github.com/gorilla/sessions"
@@ -13,15 +12,12 @@ import (
 
 var templates = getTemplates("./tmpl/*")
 var fileValidator = regexp.MustCompile("^[a-zA-Z0-9_-]+$")
-var secret, password = parseEnv()
+var secret []byte
+var password string
 var session_store = sessions.NewCookieStore(secret)
 
 func getTemplates(pathToTemplates string) *template.Template {
 	return template.Must(template.ParseGlob(pathToTemplates))
-}
-
-func parseEnv() ([]byte, string) {
-	return []byte(os.Getenv("GOWIKISECRET")), os.Getenv("GOWIKIPASSWORD")
 }
 
 func setupServer() *http.ServeMux {
@@ -42,6 +38,9 @@ func setupServer() *http.ServeMux {
 
 func main() {
 	p := flag.String("port", "8080", "port to run server on")
+	secret = []byte(*flag.String("secret", "secret", "session secret"))
+	password = *flag.String("password", "password", "admin password")
+
 	flag.Parse()
 
 	fmt.Printf("starting server on port %s", *p)
