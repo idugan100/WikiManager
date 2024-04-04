@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -12,8 +13,8 @@ import (
 
 var templates = getTemplates("./tmpl/*")
 var fileValidator = regexp.MustCompile("^[a-zA-Z0-9_-]+$")
-var session_store = sessions.NewCookieStore(secret)
 var secret, password = parseEnv()
+var session_store = sessions.NewCookieStore(secret)
 
 func getTemplates(pathToTemplates string) *template.Template {
 	return template.Must(template.ParseGlob(pathToTemplates))
@@ -24,7 +25,6 @@ func parseEnv() ([]byte, string) {
 }
 
 func setupServer() *http.ServeMux {
-	fmt.Print(secret, password)
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /view/{path}", isAdminAndValidatePath(viewWikiPage))
 	mux.HandleFunc("GET /edit/{path}", requireAdmin(validatePath(editWikiPage)))
@@ -41,10 +41,13 @@ func setupServer() *http.ServeMux {
 }
 
 func main() {
-	fmt.Println("starting server")
+	p := flag.String("port", "8080", "port to run server on")
+	flag.Parse()
+
+	fmt.Printf("starting server on port %s", *p)
 
 	server := http.Server{
-		Addr:    ":80",
+		Addr:    ":" + *p,
 		Handler: setupServer(),
 	}
 
