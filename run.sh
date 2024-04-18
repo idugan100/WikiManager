@@ -1,5 +1,6 @@
 #! /bin/bash
-
+go vet ./...
+govulncheck ./...
 go fmt *.go
 go test -v
 go build . && ./WikiManager 
